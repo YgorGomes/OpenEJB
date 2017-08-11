@@ -34,8 +34,8 @@ public class Application {
 		
 		//Criar Conexao
 		propContainer.put("test", "new://Resource?type=DataSource");
-		propContainer.put("test.JdbcDriver", "org.hsqldb.JdbcDriver");
-		propContainer.put("test.JdbcUrl", "jdbc:hsqldb.filme");
+		propContainer.put("test.JdbcDriver", "org.hsqldb.jdbc.JDBCDriver");
+		propContainer.put("test.JdbcUrl", "jdbc:hsqldb:filme");
 		
 		//Persistencia
 		propContainer.put("test.hibernate.dialect", "or.hibernate.dialect.HSQLDialect");
@@ -51,7 +51,10 @@ public class Application {
 		
 		restEJB.addFilme(filme);
 		
-		String filmeDBRest = (String) WebClient.create("http://localhost:4204").path("/OpenEJB/");
+		String filmeDBRest = (String) WebClient.create("http://localhost:4204").path("/OpenEJB/db/filme/0").get(String.class);
+		
+		System.out.println("filme EJB" + filme.getTitulo());
+		System.out.println("filme rest" + filmeDBRest);
 		
 		
 		

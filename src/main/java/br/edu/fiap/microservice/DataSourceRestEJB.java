@@ -2,6 +2,9 @@ package br.edu.fiap.microservice;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -31,7 +34,7 @@ public class DataSourceRestEJB {
 			PreparedStatement ps = cnx.prepareStatement("CREATE TABLE Filme ("
 					+"diretor VARCHAR(255), "
 					+"titulo VARCHAR(255), "
-					+"ano INTEGER()");
+					+"ano INTEGER)");
 			ps.execute();
 					
 		} finally {
@@ -46,10 +49,10 @@ public class DataSourceRestEJB {
 		
 		try {
 			PreparedStatement ps = cnx.prepareStatement("INSERT INTO Filme(diretor, titulo, ano)"
-					+ "VALUES(?,?,?))");
-			ps.setString(1, "");
-			ps.setString(2, "");
-			ps.setInt(3, 0);
+					+ "VALUES(?,?,?)");
+			ps.setString(1, filme.getDiretor());
+			ps.setString(2, filme.getTitulo());
+			ps.setInt(3, filme.getAno());
 			ps.execute();
 		} finally {
 			cnx.close();
@@ -60,6 +63,25 @@ public class DataSourceRestEJB {
 	@GET
 	@Produces
 	public String getFilmeTitulo(@PathParam("id") String id) throws Exception{
+		Connection cnx = dbUnit.getConnection();
+		
+		List<Filme> filmes = new ArrayList<Filme>();
+		
+		try {
+			PreparedStatement ps = cnx.prepareStatement("SELECT diretor, titulo, ano FROM Filme");
+			ResultSet rs = ps.executeQuery();
+			
+			while(rs.next()){
+				Filme filme = new Filme();
+				filme.setDiretor(rs.getString("diretor"));
+				filme.setTitulo(rs.getString("titulo"));
+				filme.setAno(rs.getInt("ano"));
+				filmes.add(filme);
+			}
+		} finally {
+			cnx.close();
+		}
+		return filmes.get(Integer.parseInt(id)).getTitulo();
 		
 	}
 	
